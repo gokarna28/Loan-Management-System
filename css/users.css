@@ -345,6 +345,39 @@ a {
     font-size: 15px;
     span {
       font-size: 18px;
+      
     }
   }
 }
+
+
+.payment_container{
+  /* background-color: red; */
+  padding: 20px;
+  .user_container{
+    /* background-color: yellow; */
+    h2{
+      display: flex;
+      justify-content: center;
+      color: var(--lightBlackColor);
+    }
+    .table_wrapper{
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      th{
+        border: none;
+        background-color: var(--lightBlue);
+        padding: 5px 10px;
+        font-size: 20px;
+        color: var(--whiteColor);
+      }
+      td{
+        .data{
+          font-size: 20px;
+          padding: 10px 20px;
+        }
+      }
+    }
+  }
+} 

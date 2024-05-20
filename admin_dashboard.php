@@ -114,15 +114,16 @@ if (isset($_SESSION['admin_id'])) {
                 $select_loan = "SELECT * FROM loan WHERE status='approved'";
                 $loan_data = mysqli_query($conn, $select_loan);
                 $total_loan = mysqli_num_rows($loan_data);
+                
                 //total loan with pending loan
                 $select_loan = "SELECT * FROM loan WHERE status='pending'";
                 $loan_data = mysqli_query($conn, $select_loan);
                 $total_pending = mysqli_num_rows($loan_data);
+
                 //total sum of loan loan amount
-                
-                $select_loan_sum = "SELECT SUM(loan_amount) AS total_loan_amount, SUM(amount) AS total_loan_payed
+                $select_loan_sum = "SELECT SUM(l.loan_amount) AS total_loan_amount, SUM(p.amount) AS total_loan_payed
                  FROM loan as l
-                 INNER JOIN payment as p ON l.loan_id=p.loan_id ";
+                 LEFT JOIN payment as p ON l.loan_id=p.loan_id WHERE l.status='approved'";
                 $loan_sum_result = mysqli_query($conn, $select_loan_sum);
 
                 $loan_sum_row = mysqli_fetch_assoc($loan_sum_result);

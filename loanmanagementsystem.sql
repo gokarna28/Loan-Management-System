@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 17, 2024 at 01:25 PM
+-- Generation Time: May 20, 2024 at 06:58 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -50,6 +50,7 @@ CREATE TABLE `loan` (
   `loan_id` int(11) NOT NULL,
   `user_id` int(255) NOT NULL,
   `loan_amount` varchar(255) NOT NULL,
+  `remaining_loan` varchar(255) DEFAULT '0',
   `loan_plan` varchar(255) NOT NULL,
   `loan_type` varchar(255) NOT NULL,
   `status` varchar(255) NOT NULL DEFAULT 'pending'
@@ -59,12 +60,9 @@ CREATE TABLE `loan` (
 -- Dumping data for table `loan`
 --
 
-INSERT INTO `loan` (`loan_id`, `user_id`, `loan_amount`, `loan_plan`, `loan_type`, `status`) VALUES
-(1, 2, '100000', '6-Months 5% Interest 1% penalty', 'Business Loan', 'approved'),
-(7, 4, '10000000000', '12-Months 6% Interest 2% penalty', 'Personal Loan', 'approved'),
-(8, 4, '50000', '36-Months 8% Interest 3% penalty', 'Education Loan', 'approved'),
-(9, 4, '600000', '6-Months 5% Interest 1% penalty', 'Small Business Loan', 'pending'),
-(10, 5, '400000', '12-Months 6% Interest 2% penalty', 'Education Loan', 'pending');
+INSERT INTO `loan` (`loan_id`, `user_id`, `loan_amount`, `remaining_loan`, `loan_plan`, `loan_type`, `status`) VALUES
+(26, 5, '2160000', '2100000', '36-Months 8% Interest', 'Small Business Loan', 'approved'),
+(27, 2, '53000', '0', '12-Months 6% Interest', 'Personal Loan', 'approved');
 
 -- --------------------------------------------------------
 
@@ -76,18 +74,16 @@ CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `loan_id` int(11) NOT NULL,
-  `amount` int(255) NOT NULL,
-  `date` varchar(255) NOT NULL,
-  `penalty` int(11) NOT NULL
+  `amount` varchar(255) NOT NULL,
+  `date` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `payment`
 --
 
-INSERT INTO `payment` (`payment_id`, `user_id`, `loan_id`, `amount`, `date`, `penalty`) VALUES
-(4, 2, 1, 50000, '2024/May/17 Friday', 0),
-(5, 4, 7, 2147483647, '2024/May/17 Friday', 0);
+INSERT INTO `payment` (`payment_id`, `user_id`, `loan_id`, `amount`, `date`) VALUES
+(27, 5, 26, '60000', '2024/May/20 Monday');
 
 -- --------------------------------------------------------
 
@@ -160,13 +156,13 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `loan`
 --
 ALTER TABLE `loan`
-  MODIFY `loan_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `loan_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `user`

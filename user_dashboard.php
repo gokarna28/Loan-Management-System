@@ -21,8 +21,8 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin dashboard</title>
-    <link rel="stylesheet" href="css/user2.css" />
+    <title>User dashboard</title>
+    <link rel="stylesheet" href="css/users.css" />
     <!-- Link to Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <!-- Import Google font - Poppins  -->
@@ -34,7 +34,15 @@ if (isset($_SESSION['user_id'])) {
             window.history.replaceState(null, null, window.location.href);
         }
     </script>
+    <style>
+        .status-approved {
+            color: green;
+        }
 
+        .status-pending {
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
@@ -65,6 +73,12 @@ if (isset($_SESSION['user_id'])) {
                     <div class="menu" id="payment" onclick="paymentShow()">
                         <i class="fa-solid fa-cash-register"></i>
                         <p>Payment</p>
+                    </div>
+                </a>
+                <a href="#">
+                    <div class="menu" id="payment_details" onclick="detailsShow()">
+                        <i class="fa-solid fa-cash-register"></i>
+                        <p>Payment Details</p>
                     </div>
                 </a>
             </div>
@@ -111,11 +125,12 @@ if (isset($_SESSION['user_id'])) {
                 $select_loan = "SELECT * FROM loan WHERE status='pending'";
                 $loan_data = mysqli_query($conn, $select_loan);
                 $total_pending = mysqli_num_rows($loan_data);
+
                 //total sum of loan loan amount
-                
                 $select_loan_sum = "SELECT SUM(loan_amount) AS total_loan_amount, SUM(amount) AS total_loan_payed
                  FROM loan as l
-                 INNER JOIN payment as p ON l.loan_id=p.loan_id ";
+                 LEFT JOIN payment as p ON l.loan_id=p.loan_id 
+                 WHERE l.user_id='$user_id' AND l.status='approved'";
                 $loan_sum_result = mysqli_query($conn, $select_loan_sum);
 
                 $loan_sum_row = mysqli_fetch_assoc($loan_sum_result);
@@ -135,21 +150,21 @@ if (isset($_SESSION['user_id'])) {
                             <span><?php echo $total_loan ?></span>
                             <div class="pending">
                                 <p>Pending</p>
-                                <span><?php echo $total_pending?></span>
+                                <span><?php echo $total_pending ?></span>
                             </div>
 
                         </div>
                     </div>
                     <div class="card" style="background-color:rgb(227, 235, 152)">
                         <div>
-                            <p>AMOUNT DISBURSED</p>
+                            <p>TOTAL LOAN BORROWED</p>
                             <span>Rs.<?php echo $total_loan_amount ?></span>
 
                             <div class="recived_pending">
-                                <p>Recieved
+                                <p>Payed
                                     <span>Rs.<?php echo $total_loan_payed ?></span>
                                 </p>
-                                <p>Pending
+                                <p>Remaining
                                     <span>Rs.<?php echo $total_loan_amount - $total_loan_payed ?></span>
                                 </p>
                             </div>
@@ -176,14 +191,14 @@ if (isset($_SESSION['user_id'])) {
                             error_reporting(E_ALL);
                             //retriving data from loan and payment table
                             
-                            $loan_query = "SELECT l.loan_id, l.loan_amount, l.loan_type, l.loan_plan, p.amount, l.status
+                            $loan_query = "SELECT l.loan_id, l.loan_amount, l.remaining_loan, l.loan_type, l.loan_plan, l.status
                            FROM loan as l
-                           LEFT JOIN payment as p ON l.loan_id=p.loan_id
-                           WHERE l.user_id='$user_id'";
+                           WHERE l.user_id='$user_id' ORDER BY loan_id";
                             $loan_data = mysqli_query($conn, $loan_query);
                             if ($loan_data) {
                                 if (mysqli_num_rows($loan_data) > 0) {
                                     while ($row_loan = mysqli_fetch_assoc($loan_data)) {
+
                                         ?>
                                         <tr>
                                             <td>
@@ -199,11 +214,26 @@ if (isset($_SESSION['user_id'])) {
                                                 <div class="loan_data"><?php echo $row_loan['loan_plan'] ?></div>
                                             </td>
                                             <td>
-                                                <div class="loan_data"><?php echo $row_loan['loan_amount'] - $row_loan['amount'] ?>
+                                                <div class="loan_data"><?php
+                                                if ($row_loan['remaining_loan'] == 0) {
+                                                    echo $row_loan['loan_amount'];
+                                                } else {
+                                                    echo $row_loan['remaining_loan'];
+                                                }
+                                                ?>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="loan_data"><?php echo $row_loan['status'] ?></div>
+                                                <div class="loan_data" style="
+                                                  <?php
+                                                  if ($row_loan['status'] == 'approved') {
+                                                      echo 'color: green;';
+                                                  } elseif ($row_loan['status'] == 'pending') {
+                                                      echo 'color: red;';
+                                                  }
+                                                  ?>">
+                                                    <?php echo $row_loan['status']; ?>
+                                                </div>
                                             </td>
                                         </tr>
                                         <?php
@@ -264,10 +294,10 @@ if (isset($_SESSION['user_id'])) {
                                 <div class="input_field">
                                     <select name="loan_plan" required>
                                         <option selected disabled>select your loan plan</option>
-                                        <option>36-Months 8% Interest 3% penalty</option>
-                                        <option>24-Months 7% Interest 2% penalty</option>
-                                        <option>12-Months 6% Interest 2% penalty</option>
-                                        <option>6-Months 5% Interest 1% penalty</option>
+                                        <option>36-Months 8% Interest</option>
+                                        <option>24-Months 7% Interest</option>
+                                        <option>12-Months 6% Interest</option>
+                                        <option>6-Months 5% Interest</option>
                                     </select>
 
                                 </div>
@@ -300,7 +330,7 @@ if (isset($_SESSION['user_id'])) {
 
                 <h2>Loan Payment</h2>
                 <div class="loan_search">
-                    <form action="" method="post">
+                    <form action="" method="post" autocomplete="off">
                         <input type="text" name="loan_id" placeholder="enter your loan id" required>
                         <button type="submit" name="loan_search" style="margin-left:10px;">Search</button>
                     </form>
@@ -315,7 +345,9 @@ if (isset($_SESSION['user_id'])) {
                             $select_data = mysqli_query($conn, $select);
                             if (mysqli_num_rows($select_data) == 1) {
                                 $result_loan = mysqli_fetch_assoc($select_data);
-
+                                $loan_plan = $result_loan['loan_plan'];
+                                $loan_amount = $result_loan['loan_amount'];
+                                $remaining = $result_loan['remaining_loan'];
                                 ?>
                                 <div class="fields">
                                     <div class="input_field">
@@ -324,19 +356,59 @@ if (isset($_SESSION['user_id'])) {
                                     </div>
                                     <div class="input_field">
                                         <label>Loan Plan:</label>:</label>
-                                        <input type="text" value="<?php echo $result_loan['loan_plan'] ?>" readonly>
+                                        <input type="text" name="loan_plan" value="<?php echo $result_loan['loan_plan'] ?>"
+                                            readonly>
                                     </div>
                                     <div class="input_field">
                                         <label>Loan Amount:</label>:</label>
-                                        <input type="text" value="<?php echo $result_loan['loan_amount'] ?>" readonly>
+                                        <input type="text" name="loan_amount" value="<?php echo $result_loan['loan_amount'] ?>"
+                                            readonly>
+                                    </div>
+                                    <div class="input_field">
+                                        <label>Remaining Loan Amount:</label>:</label>
+                                        <input type="text" placeholder="<?php
+                                        if ($remaining == 0) {
+                                            echo $loan_amount;
+                                        } else {
+                                            if ($loan_plan == '36-Months 8% Interest') {
+                                                $monthly_instalment = ($loan_amount) / 36;
+                                                echo $loan_amount - round($monthly_instalment, 0);
+                                            } elseif ($loan_plan == '24-Months 7% Interest') {
+                                                $monthly_instalment = ($loan_amount) / 24;
+                                                echo $loan_amount - round($monthly_instalment, 0);
+                                            } elseif ($loan_plan = '12-Months 6% Interest') {
+                                                $monthly_instalment = ($loan_amount) / 12;
+                                                echo $loan_amount - round($monthly_instalment, 0);
+                                            } elseif ($loan_plan == '6-Months 5% Interest') {
+                                                $monthly_instalment = ($loan_amount) / 6;
+                                                echo $loan_amount - round($monthly_instalment, 0);
+                                            }
+                                        }
+                                        ?>" readonly>
                                     </div>
                                     <div class="input_field">
                                         <label>Date:</label>:</label>
                                         <input type="date" id="datepicker" name="payment_date" readonly>
                                     </div>
                                     <div class="input_field">
-                                        <label>Payment Amount:</label>
-                                        <input type="number" name="amount" placeholder="Enter amount you want to pay" required>
+                                        <label>Payment Amount:<span
+                                                style='color:red; font-style: italic; font-size:15px;margin-left:10px;'>Monthly
+                                                Installment</span></label>
+                                        <input type="text" name="amount" value="<?php
+
+                                        if ($loan_plan == '36-Months 8% Interest') {
+                                            $monthly_instalment = ($loan_amount) / 36;
+                                            echo round($monthly_instalment, 0);
+                                        } elseif ($loan_plan == '24-Months 7% Interest') {
+                                            $monthly_instalment = ($loan_amount) / 24;
+                                            echo round($monthly_instalment, 0);
+                                        } elseif ($loan_plan = '12-Months 6% Interest') {
+                                            $monthly_instalment = ($loan_amount) / 12;
+                                            echo round($monthly_instalment, 0);
+                                        } elseif ($loan_plan == '6-Months 5% Interest') {
+                                            $monthly_instalment = ($loan_amount) / 6;
+                                            echo round($monthly_instalment, 0);
+                                        } ?>" readonly>
                                     </div>
                                     <div class="payment_btn">
                                         <button type="submit" name="payment">Payment</button>
@@ -345,10 +417,83 @@ if (isset($_SESSION['user_id'])) {
                                     <input type="hidden" name="user_id" value="<?php echo $user_id ?>">
                                 </div>
                                 <?php
+                            } else {
+                                echo "<script>alert('no data found')</script>";
                             }
                         }
                         ?>
                     </form>
+                </div>
+            </div>
+
+            <!-- payment details -->
+            <div class="payment_details hide">
+                <div class="payment_container">
+                    <div class="user_container ">
+                        <h2>Payment Details</h2>
+                        <div class="table_wrapper">
+                            <?php
+                            // Assuming you have already established a database connection
+                            
+                            // Execute the SQL query
+                            $user_query = "SELECT u.user_name, u.profession, u.pan_no, l.loan_id, l.loan_type, p.amount, p.date
+                    FROM user AS u
+                    INNER JOIN payment AS p ON u.user_id = p.user_id 
+                    INNER JOIN loan AS l ON p.loan_id = l.loan_id";
+
+                            $user_data = mysqli_query($conn, $user_query);
+
+                            // Check if query execution was successful
+                            if ($user_data) {
+                                ?>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Pan No.</th>
+                                            <th>Loan ID</th>
+                                            <th>Loan Type</th>
+                                            <th>Payed Amount</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        if (mysqli_num_rows($user_data) > 0) {
+                                            while ($result_user = mysqli_fetch_assoc($user_data)) {
+                                                ?>
+                                                <tr>
+                                                    <td>
+                                                        <div class="data"><?php echo $result_user['pan_no']; ?></div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="data"><?php echo $result_user['loan_id']; ?></div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="data"><?php echo $result_user['loan_type']; ?></div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="data"><?php echo $result_user['amount']; ?></div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="data"><?php echo $result_user['date']; ?></div>
+                                                    </td>
+                                                </tr>
+                                                <?php
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='7'>No data found</td></tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                                <?php
+                            } else {
+                                echo "Error executing the query: " . mysqli_error($conn);
+                            }
+                            ?>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -372,6 +517,8 @@ if (isset($_SESSION['user_id'])) {
             document.querySelector('.loan_container').classList.add("hide");
             document.querySelector('.payment_container').classList.add("hide");
             document.querySelector('.dashboard').classList.add("hide");
+            document.querySelector('#payment_details').classList.remove("active");
+            document.querySelector('.payment_details').classList.add("hide");
         }
         function newLoan() {
             document.querySelector('#myloan').classList.remove("active");
@@ -382,6 +529,8 @@ if (isset($_SESSION['user_id'])) {
             document.querySelector('.loan_container').classList.remove("hide");
             document.querySelector('.payment_container').classList.add("hide");
             document.querySelector('.dashboard').classList.add("hide");
+            document.querySelector('#payment_details').classList.remove("active");
+            document.querySelector('.payment_details').classList.add("hide");
         }
         function dashboardShow() {
             document.querySelector('#dashboard').classList.add("active");
@@ -392,17 +541,34 @@ if (isset($_SESSION['user_id'])) {
             document.querySelector('.loan_container').classList.add("hide");
             document.querySelector('.payment_container').classList.add("hide");
             document.querySelector('.dashboard').classList.remove("hide");
+            document.querySelector('#payment_details').classList.remove("active");
+            document.querySelector('.payment_details').classList.add("hide");
 
         }
         function paymentShow() {
             document.querySelector('#dashboard').classList.remove("active");
             document.querySelector('#myloan').classList.remove("active");
             document.querySelector('#payment').classList.add("active");
+            document.querySelector('#payment_details').classList.remove("active");
             document.querySelector('#newloan').classList.remove("active");
             document.querySelector('.myloan').classList.add("hide");
             document.querySelector('.loan_container').classList.add("hide");
             document.querySelector('.payment_container').classList.remove("hide");
             document.querySelector('.dashboard').classList.add("hide");
+            document.querySelector('.payment_details').classList.add("hide");
+
+        }
+        function detailsShow() {
+            document.querySelector('#dashboard').classList.remove("active");
+            document.querySelector('#myloan').classList.remove("active");
+            document.querySelector('#payment_details').classList.add("active");
+            document.querySelector('#payment').classList.remove("active");
+            document.querySelector('#newloan').classList.remove("active");
+            document.querySelector('.myloan').classList.add("hide");
+            document.querySelector('.loan_container').classList.add("hide");
+            document.querySelector('.payment_container').classList.add("hide");
+            document.querySelector('.dashboard').classList.add("hide");
+            document.querySelector('.payment_details').classList.remove("hide");
 
         }
     </script>
