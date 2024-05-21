@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 20, 2024 at 06:58 PM
+-- Generation Time: May 21, 2024 at 03:01 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,7 +61,7 @@ CREATE TABLE `loan` (
 --
 
 INSERT INTO `loan` (`loan_id`, `user_id`, `loan_amount`, `remaining_loan`, `loan_plan`, `loan_type`, `status`) VALUES
-(26, 5, '2160000', '2100000', '36-Months 8% Interest', 'Small Business Loan', 'approved'),
+(26, 5, '2160000', '2040000', '36-Months 8% Interest', 'Small Business Loan', 'approved'),
 (27, 2, '53000', '0', '12-Months 6% Interest', 'Personal Loan', 'approved');
 
 -- --------------------------------------------------------
@@ -75,15 +75,16 @@ CREATE TABLE `payment` (
   `user_id` int(11) NOT NULL,
   `loan_id` int(11) NOT NULL,
   `amount` varchar(255) NOT NULL,
-  `date` varchar(255) NOT NULL
+  `date` varchar(255) NOT NULL,
+  `bill_no` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `payment`
 --
 
-INSERT INTO `payment` (`payment_id`, `user_id`, `loan_id`, `amount`, `date`) VALUES
-(27, 5, 26, '60000', '2024/May/20 Monday');
+INSERT INTO `payment` (`payment_id`, `user_id`, `loan_id`, `amount`, `date`, `bill_no`) VALUES
+(28, 5, 26, '60000', '2024/May/21 Tuesday', 4427);
 
 -- --------------------------------------------------------
 
@@ -162,7 +163,7 @@ ALTER TABLE `loan`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `user`

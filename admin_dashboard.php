@@ -417,7 +417,7 @@ if (isset($_SESSION['admin_id'])) {
                         // Assuming you have already established a database connection
                         
                         // Execute the SQL query
-                        $user_query = "SELECT u.user_name, u.profession, u.pan_no, l.loan_id, l.loan_type, p.amount, p.date
+                        $user_query = "SELECT u.user_name, u.profession, u.pan_no, l.loan_id, l.loan_type, p.amount, p.date, p.bill_no
                     FROM user AS u
                     INNER JOIN payment AS p ON u.user_id = p.user_id 
                     INNER JOIN loan AS l ON p.loan_id = l.loan_id";
@@ -430,6 +430,7 @@ if (isset($_SESSION['admin_id'])) {
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>Bill No.</th>
                                         <th>User Name</th>
                                         <th>Profession</th>
                                         <th>Pan No.</th>
@@ -445,6 +446,9 @@ if (isset($_SESSION['admin_id'])) {
                                         while ($result_user = mysqli_fetch_assoc($user_data)) {
                                             ?>
                                             <tr>
+                                                <td>
+                                                    <div class="data"><?php echo $result_user['bill_no']; ?></div>
+                                                </td>
                                                 <td>
                                                     <div class="data"><?php echo $result_user['user_name']; ?></div>
                                                 </td>

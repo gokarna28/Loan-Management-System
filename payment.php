@@ -8,6 +8,7 @@ if (isset($_POST['payment'])) {
     $amount = $_POST['amount'];
     $loan_plan = $_POST['loan_plan'];
     $loan_amount = $_POST['loan_amount'];
+    $bill_no = $_POST['bill_no'];
 
     //retrive the data from loan table
     $loan = "SELECT * FROM loan WHERE loan_id='$loan_id'";
@@ -67,7 +68,7 @@ if (isset($_POST['payment'])) {
     }
 
 
-    $payment_query = "INSERT INTO payment(user_id, loan_id, amount, date) VALUES('$user_id', '$loan_id', '$amount', '$date')";
+    $payment_query = "INSERT INTO payment(user_id, loan_id, amount, date, bill_no) VALUES('$user_id', '$loan_id', '$amount', '$date', '$bill_no')";
     $payment_data = mysqli_query($conn, $payment_query);
     if ($payment_data) {
         echo "<script>alert('successfully payed')</script>";

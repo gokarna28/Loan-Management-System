@@ -338,6 +338,7 @@ if (isset($_SESSION['user_id'])) {
                 <div class="payment_form">
                     <form action="" method="post">
                         <?php
+                        $bill_no= rand(0000, 9999);
                         if (isset($_POST['loan_search'])) {
                             $loan_id = $_POST['loan_id'];
 
@@ -350,6 +351,10 @@ if (isset($_SESSION['user_id'])) {
                                 $remaining = $result_loan['remaining_loan'];
                                 ?>
                                 <div class="fields">
+                                    <div class="input_field">
+                                        <label>Bill No.:</label>:</label>
+                                        <input type="text" name="bill_no" value="<?php echo $bill_no?>" readonly>
+                                    </div>
                                     <div class="input_field">
                                         <label>Loan Type:</label>:</label>
                                         <input type="text" value="<?php echo $result_loan['loan_type'] ?>" readonly>
@@ -436,7 +441,7 @@ if (isset($_SESSION['user_id'])) {
                             // Assuming you have already established a database connection
                             
                             // Execute the SQL query
-                            $user_query = "SELECT u.user_name, u.profession, u.pan_no, l.loan_id, l.loan_type, p.amount, p.date
+                            $user_query = "SELECT u.user_name, u.profession, u.pan_no, l.loan_id, l.loan_type, p.amount, p.date, p.bill_no
                     FROM user AS u
                     INNER JOIN payment AS p ON u.user_id = p.user_id 
                     INNER JOIN loan AS l ON p.loan_id = l.loan_id";
@@ -449,7 +454,7 @@ if (isset($_SESSION['user_id'])) {
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Pan No.</th>
+                                            <th>Bill No.</th>
                                             <th>Loan ID</th>
                                             <th>Loan Type</th>
                                             <th>Payed Amount</th>
@@ -463,7 +468,7 @@ if (isset($_SESSION['user_id'])) {
                                                 ?>
                                                 <tr>
                                                     <td>
-                                                        <div class="data"><?php echo $result_user['pan_no']; ?></div>
+                                                        <div class="data"><?php echo $result_user['bill_no']; ?></div>
                                                     </td>
                                                     <td>
                                                         <div class="data"><?php echo $result_user['loan_id']; ?></div>
